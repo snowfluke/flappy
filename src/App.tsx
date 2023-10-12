@@ -1,7 +1,8 @@
 import { onMount } from "solid-js";
 import { Bird } from "./lib/bird";
-import { Title } from "./lib/title-screen";
+import { TitleScreen } from "./lib/title-screen";
 import { Background } from "./lib/background";
+import { GameScreen } from "./lib/game-screen";
 
 function App() {
   let canvas: HTMLCanvasElement;
@@ -11,6 +12,7 @@ function App() {
     // const SCORE = 0;
     const IMAGE = new Image();
     IMAGE.src = "/spritesheet.png";
+    let frame = 0;
 
     const resizeCanvas = () => {
       const targetWidth = window.innerWidth;
@@ -28,13 +30,13 @@ function App() {
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
 
-      let frame = 0;
-
       const ctx = canvas.getContext("2d")!;
-      const bird = new Bird(canvas.width);
-      const title = new Title(canvas.width, canvas.height);
+      const bird = new Bird(canvas.width, canvas.height);
+      const title = new TitleScreen(canvas.width, canvas.height);
       const background = new Background(canvas.width, canvas.height);
       const baseX = background.getBaseTop();
+
+      const game = new GameScreen(canvas.width, canvas.height);
 
       const animate = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -49,8 +51,9 @@ function App() {
 
         // BIRD
         // bird.update(canvas.height, baseX);
-        // bird.draw(ctx, IMAGE, frame, GAME_SPEED);
 
+        // GAME
+        game.draw(bird, ctx, IMAGE, frame, GAME_SPEED);
         frame++;
         requestAnimationFrame(animate);
       };

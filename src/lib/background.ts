@@ -12,7 +12,6 @@ export class Background {
   static spriteHeight = 256;
   static spriteX = 0;
   static spriteY = 0;
-  static scaleFactor = 0.1;
 
   spriteWidth: number = Background.spriteWidth;
   spriteHeight: number = Background.spriteHeight;
@@ -54,10 +53,10 @@ export class Background {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D, image: HTMLImageElement) {
+  draw(ctx: CanvasRenderingContext2D, IMAGE: HTMLImageElement) {
     // Background
     ctx.drawImage(
-      image,
+      IMAGE,
       this.spriteX,
       this.spriteY,
       this.spriteWidth,
@@ -70,7 +69,7 @@ export class Background {
 
     // Base
     ctx.drawImage(
-      image,
+      IMAGE,
       this.spriteBaseX,
       this.spriteBaseY,
       this.spriteBaseWidth,
@@ -82,7 +81,7 @@ export class Background {
     );
 
     ctx.drawImage(
-      image,
+      IMAGE,
       this.spriteBaseX,
       this.spriteBaseY,
       this.spriteBaseWidth,

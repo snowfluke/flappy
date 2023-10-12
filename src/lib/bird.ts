@@ -1,3 +1,5 @@
+import { Misc } from "./misc";
+
 export class Bird {
   x: number;
   y: number;
@@ -11,7 +13,8 @@ export class Bird {
   static spriteHeight = 12;
   static spriteGap = 5;
   static spriteY = 261;
-  static scaleFactor = 0.1;
+
+  static grid = 12;
 
   spriteX: number = 0;
   spriteY: number = Bird.spriteHeight;
@@ -25,10 +28,12 @@ export class Bird {
   jumpStrength: number = 10;
   maxJumpCooldown: number = 10;
 
-  constructor(canvasWidth: number) {
-    const scale = this.scale(canvasWidth);
-    this.x = 150;
-    this.y = 200;
+  constructor(canvasWidth: number, canvasHeight: number) {
+    const scale = Misc.getScale(canvasWidth);
+
+    this.x = canvasWidth * (2.75 / Bird.grid);
+    this.y = canvasHeight * (4.65 / Bird.grid);
+
     this.vy = 0;
     this.angle = 0;
 
@@ -36,13 +41,9 @@ export class Bird {
     this.height = (this.width * Bird.spriteHeight) / Bird.spriteWidth;
   }
 
-  scale(width: number) {
-    return (Bird.scaleFactor * width) / Bird.spriteWidth;
-  }
-
   draw(
     ctx: CanvasRenderingContext2D,
-    image: HTMLImageElement,
+    IMAGE: HTMLImageElement,
     frame: number,
     GAME_SPEED: number
   ) {
@@ -60,7 +61,7 @@ export class Bird {
     }
 
     ctx.drawImage(
-      image,
+      IMAGE,
       this.spriteX * (Bird.spriteWidth + Bird.spriteGap),
       Bird.spriteY,
       Bird.spriteWidth,
@@ -103,24 +104,22 @@ export class Bird {
   }
 
   static getStaticWidth(canvasWidth: number) {
-    const scale = (Bird.scaleFactor * canvasWidth) / Bird.spriteWidth;
-    return Bird.spriteWidth * scale;
+    return Bird.spriteWidth * Misc.getScale(canvasWidth);
   }
 
   static drawStatic(
     ctx: CanvasRenderingContext2D,
     canvasWidth: number,
-    image: HTMLImageElement,
+    IMAGE: HTMLImageElement,
     birdSpriteX: number,
     x: number,
     y: number
   ) {
-    const scale = (Bird.scaleFactor * canvasWidth) / Bird.spriteWidth;
-    const width = Bird.spriteWidth * scale;
+    const width = Bird.spriteWidth * Misc.getScale(canvasWidth);
     const height = (width * Bird.spriteHeight) / Bird.spriteWidth;
 
     ctx.drawImage(
-      image,
+      IMAGE,
       birdSpriteX * (Bird.spriteWidth + Bird.spriteGap),
       Bird.spriteY,
       Bird.spriteWidth,
