@@ -1,13 +1,6 @@
-type misc = {
-  spriteX: number;
-  spriteY: number;
-  spriteWidth: number;
-  spriteHeight: number;
-};
-
 export class Misc {
   static marginPercentage: number = 0.15;
-  static miscList: { [key: string]: misc } = {
+  static miscList: { [key: string]: Sprite } = {
     tutorial: {
       spriteX: 149,
       spriteY: 124,

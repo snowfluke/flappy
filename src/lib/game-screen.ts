@@ -1,64 +1,104 @@
 import { Bird } from "./bird";
+import { Button } from "./button";
 import { Misc } from "./misc";
+import { Score } from "./score";
 import { Title } from "./title";
 
 export class GameScreen {
-  play: boolean;
+  static grid: number = 12;
+
+  IMAGE: HTMLImageElement;
+  FPS: number;
+
+  bird: Bird;
+  baseX: number;
 
   canvasWidth: number;
   canvasHeight: number;
 
-  static grid: number = 12;
-  birdSpriteX: number;
+  birdSpriteX: number = 0;
+  scale: number;
 
-  constructor(canvasWidth: number, canvasHeight: number) {
-    this.play = false;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.birdSpriteX = 0;
-  }
+  state: State;
+  listener: void;
 
-  draw(
-    bird: Bird,
-    ctx: CanvasRenderingContext2D,
+  constructor(
+    canvas: HTMLCanvasElement,
     IMAGE: HTMLImageElement,
-    frame: number,
-    GAME_SPEED: number
+    FPS: number,
+    STATE: State,
+    baseX: number
   ) {
-    if (this.birdSpriteX >= Bird.spriteFrame - 1) this.birdSpriteX = 0;
-    if (frame % GAME_SPEED == 0) this.birdSpriteX++;
+    this.IMAGE = IMAGE;
+    this.FPS = FPS;
+    this.state = STATE;
 
-    Bird.drawStatic(
+    this.canvasWidth = canvas.width;
+    this.canvasHeight = canvas.height;
+
+    this.bird = new Bird(canvas, IMAGE, FPS, baseX);
+
+    this.baseX = baseX;
+    this.scale = Misc.getScale(this.canvasWidth);
+
+    this.listener = window.addEventListener("keydown", (e) => {
+      if (e.code === "ArrowUp" && this.state.playState == "play") {
+        this.bird.jump();
+      }
+    });
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    // Normal bird
+    this.bird.draw(ctx);
+
+    // if (this.state.playState == "init") {
+    //   // Title get ready
+    //   Title.draw(
+    //     "ready",
+    //     ctx,
+    //     this.IMAGE,
+    //     0,
+    //     this.canvasHeight * (2.39 / GameScreen.grid),
+    //     this.canvasWidth
+    //   );
+
+    //   // Gesture hint
+    //   Misc.draw(
+    //     "tutorial",
+    //     ctx,
+    //     this.IMAGE,
+    //     this.canvasWidth / 2,
+    //     this.canvasHeight * (5 / GameScreen.grid),
+    //     this.canvasWidth
+    //   );
+    // }
+
+    // Pause button
+    Button.draw(
+      "pause",
       ctx,
+      this.IMAGE,
+      this.canvasWidth * (1 / GameScreen.grid),
+      this.canvasHeight * (0.5 / GameScreen.grid),
+      this.scale
+    );
+
+    // Score
+    Score.draw(
+      ctx,
+      this.IMAGE,
+      this.canvasWidth / 2 -
+        this.state.score.length * Score.getStaticScoreWidth(this.state.score) -
+        (this.state.score.length - 1) * Score.spriteGap,
+      this.canvasHeight * (0.5 / GameScreen.grid),
       this.canvasWidth,
-      IMAGE,
-      this.birdSpriteX,
-      bird.x,
-      bird.y
-    );
-
-    Title.draw(
-      "ready",
-      ctx,
-      IMAGE,
-      0,
-      this.canvasHeight * (2.39 / GameScreen.grid),
-      this.canvasWidth
-    );
-
-    Misc.draw(
-      "tutorial",
-      ctx,
-      IMAGE,
-      this.canvasWidth / 2,
-      this.canvasHeight * (5 / GameScreen.grid),
-      this.canvasWidth
+      this.state.score
     );
   }
 
-  update() {}
-
-  start() {}
-
-  pause() {}
+  update(frame: number) {
+    if (this.state.playState === "init") return this.bird.update(frame, true);
+    this.bird.update(frame);
+  }
 }

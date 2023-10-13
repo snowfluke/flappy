@@ -1,62 +1,71 @@
 export class Background {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-
-  baseX: number;
-  baseX2: number;
-  baseHeight: number;
-
   static spriteWidth = 144;
   static spriteHeight = 256;
   static spriteX = 0;
   static spriteY = 0;
-
-  spriteWidth: number = Background.spriteWidth;
-  spriteHeight: number = Background.spriteHeight;
-  spriteX: number = Background.spriteX;
-  spriteY: number = Background.spriteY;
 
   static spriteBaseWidth = 154;
   static spriteBaseHeight = 56;
   static spriteBaseX = 149;
   static spriteBaseY = 0;
 
+  IMAGE: HTMLImageElement;
+  GAME_SPEED: number;
+
+  x: number = 0;
+  y: number = 0;
+  width: number;
+  height: number;
+
+  baseX: number = 0;
+  baseX2: number;
+  baseHeight: number;
+
+  spriteWidth: number = Background.spriteWidth;
+  spriteHeight: number = Background.spriteHeight;
+  spriteX: number = Background.spriteX;
+  spriteY: number = Background.spriteY;
+
   spriteBaseWidth: number = Background.spriteBaseWidth;
   spriteBaseHeight: number = Background.spriteBaseHeight;
   spriteBaseX: number = Background.spriteBaseX;
   spriteBaseY: number = Background.spriteBaseY;
 
-  constructor(canvasWidth: number, canvasHeight: number) {
-    this.x = this.y = this.baseX = 0;
-    this.width = canvasWidth;
-    this.height = canvasHeight;
+  constructor(canvas: HTMLCanvasElement, IMAGE: HTMLImageElement, FPS: number) {
+    this.IMAGE = IMAGE;
+    this.width = canvas.width;
+    this.height = canvas.height;
+
+    this.GAME_SPEED = Math.round(FPS * 0.4);
+
     this.baseHeight = this.spriteBaseHeight * 3.35;
-    this.baseX2 = this.width;
+    this.baseX2 = this.width - this.GAME_SPEED;
   }
 
   getBaseTop() {
     return this.baseHeight / 2;
   }
 
-  update(speed: number) {
-    if (this.baseX <= -this.width + speed) {
-      this.baseX = this.width - speed;
+  update() {
+    if (this.baseX <= -this.width + this.GAME_SPEED) {
+      this.baseX = this.width - this.GAME_SPEED;
+      this.baseX2 += this.GAME_SPEED;
     } else {
-      this.baseX -= speed;
+      this.baseX -= this.GAME_SPEED;
     }
-    if (this.baseX2 <= -this.width + speed) {
-      this.baseX2 = this.width - speed;
+
+    if (this.baseX2 <= -this.width + this.GAME_SPEED) {
+      this.baseX2 = this.width - this.GAME_SPEED;
+      this.baseX += this.GAME_SPEED;
     } else {
-      this.baseX2 -= speed;
+      this.baseX2 -= this.GAME_SPEED;
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D, IMAGE: HTMLImageElement) {
+  draw(ctx: CanvasRenderingContext2D) {
     // Background
     ctx.drawImage(
-      IMAGE,
+      this.IMAGE,
       this.spriteX,
       this.spriteY,
       this.spriteWidth,
@@ -69,7 +78,7 @@ export class Background {
 
     // Base
     ctx.drawImage(
-      IMAGE,
+      this.IMAGE,
       this.spriteBaseX,
       this.spriteBaseY,
       this.spriteBaseWidth,
@@ -80,8 +89,9 @@ export class Background {
       this.baseHeight
     );
 
+    // Base 2 for moving it
     ctx.drawImage(
-      IMAGE,
+      this.IMAGE,
       this.spriteBaseX,
       this.spriteBaseY,
       this.spriteBaseWidth,

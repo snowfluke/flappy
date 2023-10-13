@@ -1,15 +1,8 @@
 import { Misc } from "./misc";
 
-type title = {
-  spriteX: number;
-  spriteY: number;
-  spriteWidth: number;
-  spriteHeight: number;
-};
-
 export class Title {
   static marginPercentage: number = 0.15;
-  static titleList: { [key: string]: title } = {
+  static titleList: { [key: string]: Sprite } = {
     ready: {
       spriteX: 210,
       spriteY: 382,

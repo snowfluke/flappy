@@ -1,12 +1,5 @@
-type button = {
-  spriteX: number;
-  spriteY: number;
-  spriteWidth: number;
-  spriteHeight: number;
-};
-
 export class Button {
-  static buttonList: { [key: string]: button } = {
+  static buttonList: { [key: string]: Sprite } = {
     pause: {
       spriteX: 0,
       spriteY: 332,

@@ -1,20 +1,25 @@
 import { Misc } from "./misc";
 
 export class Bird {
-  x: number;
-  y: number;
-  vy: number;
-  angle: number;
-  width: number;
-  height: number;
-
   static spriteFrame = 4;
   static spriteWidth = 17;
   static spriteHeight = 12;
   static spriteGap = 5;
   static spriteY = 261;
-
   static grid = 12;
+
+  IMAGE: HTMLImageElement;
+  FPS: number;
+
+  x: number;
+  y: number;
+  vy: number = 0;
+  angle: number = 0;
+
+  width: number;
+  height: number;
+  canvasWidth: number;
+  canvasHeight: number;
 
   spriteX: number = 0;
   spriteY: number = Bird.spriteHeight;
@@ -27,29 +32,31 @@ export class Bird {
   jumpCooldown: number = 0;
   jumpStrength: number = 10;
   maxJumpCooldown: number = 10;
+  baseX: number;
 
-  constructor(canvasWidth: number, canvasHeight: number) {
-    const scale = Misc.getScale(canvasWidth);
+  constructor(
+    canvas: HTMLCanvasElement,
+    IMAGE: HTMLImageElement,
+    FPS: number,
+    baseX: number
+  ) {
+    this.IMAGE = IMAGE;
+    this.FPS = FPS;
 
-    this.x = canvasWidth * (2.75 / Bird.grid);
-    this.y = canvasHeight * (4.65 / Bird.grid);
+    this.canvasWidth = canvas.width;
+    this.canvasHeight = canvas.height;
 
-    this.vy = 0;
-    this.angle = 0;
+    const scale = Misc.getScale(this.canvasWidth);
+    this.baseX = baseX;
+
+    this.x = this.canvasWidth * (2.75 / Bird.grid);
+    this.y = this.canvasHeight * (4.65 / Bird.grid);
 
     this.width = Bird.spriteWidth * scale;
     this.height = (this.width * Bird.spriteHeight) / Bird.spriteWidth;
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    IMAGE: HTMLImageElement,
-    frame: number,
-    GAME_SPEED: number
-  ) {
-    if (this.angle < 80) this.angle += 3;
-    if (frame % GAME_SPEED == 0) this.spriteX++;
-
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 
@@ -61,7 +68,7 @@ export class Bird {
     }
 
     ctx.drawImage(
-      IMAGE,
+      this.IMAGE,
       this.spriteX * (Bird.spriteWidth + Bird.spriteGap),
       Bird.spriteY,
       Bird.spriteWidth,
@@ -75,11 +82,15 @@ export class Bird {
     ctx.restore();
   }
 
-  update(canvasHeight: number, baseHeight: number) {
+  update(frame: number, stationary: boolean = false) {
     if (this.spriteX >= this.spriteFrame - 1) this.spriteX = 0;
+    if (frame % this.FPS == 0) this.spriteX++;
+    if (stationary) return;
 
-    if (this.y > canvasHeight - (this.height + baseHeight)) {
-      this.y = canvasHeight - (this.height + baseHeight);
+    if (this.angle < 80) this.angle += 3;
+
+    if (this.y > this.canvasHeight - (this.height + this.baseX)) {
+      this.y = this.canvasHeight - (this.height + this.baseX);
       this.vy = 0;
     } else {
       this.vy += this.angle < 50 ? 0.8 * this.weight : this.weight;

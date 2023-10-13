@@ -4,6 +4,18 @@ import { Misc } from "./misc";
 import { Title } from "./title";
 
 export class TitleScreen {
+  static spriteGap = 5;
+  static marginPercentage = 0.15;
+  static grid = 12;
+
+  static spriteCreditX = 149;
+  static spriteCreditY = 178;
+  static spriteCreditWidth = 95;
+  static spriteCreditHeight = 7;
+
+  IMAGE: HTMLImageElement;
+  FPS: number;
+
   x: number;
   y: number;
   creditX: number;
@@ -15,74 +27,87 @@ export class TitleScreen {
   canvasWidth: number;
   canvasHeight: number;
 
-  birdSpriteX: number;
+  birdSpriteX: number = 0;
   maxY: number;
-  vy: number;
-
-  static spriteGap = 5;
-  static marginPercentage = 0.15;
-  static grid = 12;
+  vy: number = 0;
 
   spriteGap: number = TitleScreen.spriteGap;
   scale: number;
   width: number;
 
-  static spriteCreditX = 149;
-  static spriteCreditY = 178;
-  static spriteCreditWidth = 95;
-  static spriteCreditHeight = 7;
+  constructor(canvas: HTMLCanvasElement, IMAGE: HTMLImageElement, FPS: number) {
+    this.IMAGE = IMAGE;
+    this.FPS = FPS;
 
-  constructor(canvasWidth: number, canvasHeight: number) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
+    this.canvasWidth = canvas.width;
+    this.canvasHeight = canvas.height;
 
-    const title = Title.getCenterX("title", canvasWidth);
-    this.scale = Misc.getScale(canvasWidth);
+    const title = Title.getCenterX("title", this.canvasWidth);
+    this.scale = Misc.getScale(this.canvasWidth);
     this.width = title.width * title.scale;
 
     this.creditWidth = TitleScreen.spriteCreditWidth * title.scale;
     this.creditHeight = TitleScreen.spriteCreditHeight * title.scale;
 
-    this.x = title.x - Bird.getStaticWidth(canvasWidth) / 2;
-    this.y = (3 / TitleScreen.grid) * canvasHeight;
+    this.x = title.x - Bird.getStaticWidth(this.canvasWidth) / 2;
+    this.y = (3 / TitleScreen.grid) * this.canvasHeight;
 
     this.creditX = this.centerX(this.creditWidth);
-    this.creditY = (11 / TitleScreen.grid) * canvasHeight;
+    this.creditY = (11 / TitleScreen.grid) * this.canvasHeight;
 
-    this.birdSpriteX = 0;
     this.maxY = this.y;
-    this.vy = 0;
   }
 
   centerX(width: number) {
     return (this.canvasWidth - width) / 2;
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    IMAGE: HTMLImageElement,
-    frame: number,
-    GAME_SPEED: number
-  ) {
-    // Title
-    Title.draw("title", ctx, IMAGE, this.x, this.y, this.canvasWidth, false);
-
-    if (this.birdSpriteX >= Bird.spriteFrame - 1) this.birdSpriteX = 0;
-    if (frame % GAME_SPEED == 0) this.birdSpriteX++;
+  draw(ctx: CanvasRenderingContext2D) {
+    // Title Flappy Bird
+    Title.draw(
+      "title",
+      ctx,
+      this.IMAGE,
+      this.x,
+      this.y,
+      this.canvasWidth,
+      false
+    );
 
     // Bird beside the title
     Bird.drawStatic(
       ctx,
       this.canvasWidth,
-      IMAGE,
+      this.IMAGE,
       this.birdSpriteX,
       this.x + this.width + this.spriteGap,
       this.y + Bird.spriteHeight
     );
 
-    // Credit text
+    // Start button
+    Button.draw(
+      "start",
+      ctx,
+      this.IMAGE,
+      this.canvasWidth * (2 / TitleScreen.grid),
+      this.canvasHeight * (9 / TitleScreen.grid),
+      this.scale
+    );
+
+    // Score button
+    Button.draw(
+      "score",
+      ctx,
+      this.IMAGE,
+      this.canvasWidth * (10 / TitleScreen.grid),
+      this.canvasHeight * (9 / TitleScreen.grid),
+      this.scale,
+      true
+    );
+
+    // Credits text
     ctx.drawImage(
-      IMAGE,
+      this.IMAGE,
       TitleScreen.spriteCreditX,
       TitleScreen.spriteCreditY,
       TitleScreen.spriteCreditWidth,
@@ -92,31 +117,14 @@ export class TitleScreen {
       this.creditWidth,
       this.creditHeight
     );
-
-    // Buttons
-    Button.draw(
-      "start",
-      ctx,
-      IMAGE,
-      this.canvasWidth * (2 / TitleScreen.grid),
-      this.canvasHeight * (9 / TitleScreen.grid),
-      this.scale
-    );
-
-    // Buttons
-    Button.draw(
-      "score",
-      ctx,
-      IMAGE,
-      this.canvasWidth * (10 / TitleScreen.grid),
-      this.canvasHeight * (9 / TitleScreen.grid),
-      this.scale,
-      true
-    );
   }
 
   update(frame: number) {
     let sinus = Math.sin(frame * 0.1) * 5;
+
+    if (this.birdSpriteX >= Bird.spriteFrame - 1) this.birdSpriteX = 0;
+    if (frame % this.FPS == 0) this.birdSpriteX++;
+
     if (this.y >= this.maxY + sinus) {
       this.y = this.maxY + sinus;
       this.vy = 0;
