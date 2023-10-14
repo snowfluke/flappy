@@ -75,11 +75,13 @@ export class TitleScreen {
       new Button(
         canvas,
         IMAGE,
-        "score",
+        "dscore",
         this.canvasWidth * (10 / TitleScreen.grid),
         this.canvasHeight * (9 / TitleScreen.grid),
         () => {
-          console.log(state.highestScore);
+          if (state.playState == "score") return state.setPlayState("init");
+
+          state.setPlayState("score");
         },
         true
       ),

@@ -2,6 +2,7 @@ import { onMount } from "solid-js";
 import { TitleScreen } from "./lib/title-screen";
 import { Background } from "./lib/background";
 import { GameScreen } from "./lib/game-screen";
+import { GameOver } from "./lib/gameover-overlay";
 
 function App() {
   const ASPECT_RATIO = 184 / 256;
@@ -26,6 +27,7 @@ function App() {
 
     const ctx = canvas.getContext("2d")!;
     const background = new Background(canvas, IMAGE, FPS);
+    const gameOver = new GameOver(canvas, IMAGE);
 
     const titleScreen = new TitleScreen(canvas, IMAGE, FPS);
     screens.title = {
@@ -63,14 +65,20 @@ function App() {
       frame++;
 
       if (state.playState == "stop") {
-        console.log(state);
-
         let prevHs = localStorage.getItem("hs") || "0";
         if (parseInt(prevHs) < parseInt(state.score)) {
           localStorage.setItem("hs", state.score);
           state.highestScore = state.score;
         }
+
+        state.buttons = gameOver.getAllButtons();
+        gameOver.draw(ctx);
+        console.log("state", state);
         return;
+      }
+
+      if (state.playState == "score") {
+        gameOver.draw(ctx, true);
       }
       requestAnimationFrame(animate);
     };
@@ -78,6 +86,7 @@ function App() {
 
     canvas.addEventListener("click", (e) => {
       if (!state.buttons.length) return;
+
       for (let i = 0; i < state.buttons.length; i++) {
         if (
           state.buttons[i].isInside(e.offsetX, e.offsetY) &&

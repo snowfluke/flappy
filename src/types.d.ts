@@ -6,7 +6,7 @@ type Sprite = {
 };
 
 type screenList = ["title", "game"];
-type playState = ["init", "play", "pause", "over", "stop"];
+type playState = ["init", "score", "play", "pause", "over", "stop"];
 type birdPos = {
   x: number;
   y1: number;

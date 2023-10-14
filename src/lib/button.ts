@@ -32,7 +32,7 @@ export class Button {
       spriteWidth: 40,
       spriteHeight: 14,
     },
-    score: {
+    dscore: {
       spriteX: 135,
       spriteY: 351,
       spriteWidth: 40,

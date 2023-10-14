@@ -1,4 +1,4 @@
-import { audio, state } from "../App";
+import { state } from "../App";
 import { Bird } from "./bird";
 import { Button } from "./button";
 import { Misc } from "./misc";
@@ -96,7 +96,6 @@ export class GameScreen {
     });
 
     this.listentouchListener = window.addEventListener("touchstart", (e) => {
-      e.preventDefault();
       if (e.type === "touchstart" && state.currentScreen == "game") {
         if (state.playState != "init" && state.playState != "play") return;
         if (state.playState == "init") {
@@ -137,19 +136,19 @@ export class GameScreen {
     }
 
     // Button
-    this.activeButton.draw(ctx);
+    if (state.playState !== "over" && state.playState !== "stop") {
+      this.activeButton.draw(ctx);
 
-    // Score
-    Score.draw(
-      ctx,
-      this.IMAGE,
-      this.canvasWidth / 2 -
-        state.score.length * Score.getStaticScoreWidth(state.score) -
-        (state.score.length - 1) * Score.spriteGap,
-      this.canvasHeight * (0.5 / GameScreen.grid),
-      this.canvasWidth,
-      state.score
-    );
+      // Score
+      Score.draw(
+        ctx,
+        this.IMAGE,
+        this.canvasWidth / 2 - Score.getScoreWidth(state.score),
+        this.canvasHeight * (0.5 / GameScreen.grid),
+        this.canvasWidth,
+        state.score
+      );
+    }
   }
 
   getAllButtons() {

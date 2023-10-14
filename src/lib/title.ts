@@ -34,6 +34,13 @@ export class Title {
     };
   }
 
+  static getDimension(name: string) {
+    return {
+      width: this.titleList[name].spriteWidth,
+      height: this.titleList[name].spriteHeight,
+    };
+  }
+
   static draw(
     name: string,
     ctx: CanvasRenderingContext2D,
