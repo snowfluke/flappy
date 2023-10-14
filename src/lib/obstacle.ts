@@ -1,4 +1,4 @@
-import { state } from "../App";
+import { audio, state } from "../App";
 import { Misc } from "./misc";
 export class Obstacle {
   static top: Sprite = {
@@ -23,6 +23,7 @@ export class Obstacle {
   scale: number;
   width: number;
   counted: boolean = false;
+  hit: boolean = false;
 
   x: number;
   top: number;
@@ -77,24 +78,31 @@ export class Obstacle {
   }
 
   update(ctx: CanvasRenderingContext2D, FPS: number) {
-    if (state.playState !== "pause" && state.playState !== "stop") {
+    if (!["pause", "stop"].includes(state.playState)) {
       this.x -= FPS;
     }
 
+    this.draw(ctx);
+    if (state.playState == "over") return;
     if (state.birdPos.x > this.x && state.birdPos.x < this.x + this.width) {
       if (
         state.birdPos.y1 < this.reasonableHeight ||
         state.birdPos.y2 > this.bottom
       ) {
+        audio.hit();
         state.setPlayState("over");
+
+        // set timeout 1s
+        setTimeout(() => {
+          audio.die();
+        }, 250);
       }
     }
 
     if (!this.counted && state.birdPos.x > this.x + this.width) {
       state.incScore();
       this.counted = true;
+      audio.point();
     }
-
-    this.draw(ctx);
   }
 }

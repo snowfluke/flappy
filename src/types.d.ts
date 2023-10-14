@@ -13,6 +13,10 @@ type birdPos = {
   y2: number;
 };
 
+type Audios = {
+  [key: string]: () => void;
+};
+
 type State = {
   score: string;
   highestScore: string;

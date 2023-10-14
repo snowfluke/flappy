@@ -1,4 +1,4 @@
-import { state } from "../App";
+import { audio, state } from "../App";
 import { Misc } from "./misc";
 
 export class Bird {
@@ -96,7 +96,7 @@ export class Bird {
     if (this.y > this.canvasHeight - (this.height + this.baseX)) {
       this.y = this.canvasHeight - (this.height + this.baseX);
       this.vy = 0;
-
+      if (state.playState == "play") audio.hit();
       state.setPlayState("stop");
     } else {
       this.vy += this.angle < 50 ? 0.8 * this.weight : this.weight;
@@ -117,6 +117,7 @@ export class Bird {
 
       this.vy -= this.jumpStrength;
       this.jumpCooldown = this.maxJumpCooldown;
+      audio.wing();
     }
   }
 

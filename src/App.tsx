@@ -3,33 +3,6 @@ import { TitleScreen } from "./lib/title-screen";
 import { Background } from "./lib/background";
 import { GameScreen } from "./lib/game-screen";
 
-export const state: State = {
-  score: "0",
-  highestScore: "0",
-  currentScreen: "title",
-  playState: "init",
-  birdPos: {
-    x: 0,
-    y1: 0,
-    y2: 0,
-  },
-  buttons: [],
-  setBirdPos(birdPos: birdPos) {
-    this.birdPos = birdPos;
-  },
-  incScore: function () {
-    this.score = (parseInt(this.score) + 1).toString();
-  },
-  setPlayState(state) {
-    this.playState = state;
-  },
-  toScreen(screenName: screenList[number]) {
-    this.currentScreen = screenName;
-  },
-};
-
-export const screens: Screens = {};
-
 function App() {
   const ASPECT_RATIO = 184 / 256;
   const FPS = 7;
@@ -111,6 +84,7 @@ function App() {
           state.buttons[i].name !== state.playState
         ) {
           state.buttons[i].onclick(screens);
+          audio.swoosh();
         }
       }
     });
@@ -119,4 +93,53 @@ function App() {
   return <canvas ref={canvas!} />;
 }
 
+export const state: State = {
+  score: "0",
+  highestScore: "0",
+  currentScreen: "title",
+  playState: "init",
+  birdPos: {
+    x: 0,
+    y1: 0,
+    y2: 0,
+  },
+  buttons: [],
+  setBirdPos(birdPos: birdPos) {
+    this.birdPos = birdPos;
+  },
+  incScore: function () {
+    this.score = (parseInt(this.score) + 1).toString();
+  },
+  setPlayState(state) {
+    this.playState = state;
+  },
+  toScreen(screenName: screenList[number]) {
+    this.currentScreen = screenName;
+  },
+};
+
+export const screens: Screens = {};
+
+export const audio: Audios = {
+  wing: () => {
+    const audio = new Audio("/audio/wing.ogg");
+    audio.play();
+  },
+  hit: () => {
+    const audio = new Audio("/audio/hit.ogg");
+    audio.play();
+  },
+  die: () => {
+    const audio = new Audio("/audio/die.ogg");
+    audio.play();
+  },
+  point: () => {
+    const audio = new Audio("/audio/point.ogg");
+    audio.play();
+  },
+  swoosh: () => {
+    const audio = new Audio("/audio/swoosh.ogg");
+    audio.play();
+  },
+};
 export default App;

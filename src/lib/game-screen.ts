@@ -1,4 +1,4 @@
-import { state } from "../App";
+import { audio, state } from "../App";
 import { Bird } from "./bird";
 import { Button } from "./button";
 import { Misc } from "./misc";
