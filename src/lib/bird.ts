@@ -1,3 +1,4 @@
+import { state } from "../App";
 import { Misc } from "./misc";
 
 export class Bird {
@@ -56,6 +57,9 @@ export class Bird {
     this.height = (this.width * Bird.spriteHeight) / Bird.spriteWidth;
   }
 
+  getBirdPos() {
+    return { x: this.x, y: this.y };
+  }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
@@ -66,7 +70,6 @@ export class Bird {
     } else {
       ctx.rotate((this.angle * Math.PI) / 180);
     }
-
     ctx.drawImage(
       this.IMAGE,
       this.spriteX * (Bird.spriteWidth + Bird.spriteGap),
@@ -83,6 +86,7 @@ export class Bird {
   }
 
   update(frame: number, stationary: boolean = false) {
+    if (state.playState == "pause") return;
     if (this.spriteX >= this.spriteFrame - 1) this.spriteX = 0;
     if (frame % this.FPS == 0) this.spriteX++;
     if (stationary) return;
@@ -92,6 +96,8 @@ export class Bird {
     if (this.y > this.canvasHeight - (this.height + this.baseX)) {
       this.y = this.canvasHeight - (this.height + this.baseX);
       this.vy = 0;
+
+      state.setPlayState("stop");
     } else {
       this.vy += this.angle < 50 ? 0.8 * this.weight : this.weight;
       this.y += this.vy;

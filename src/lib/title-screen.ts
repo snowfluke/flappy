@@ -1,3 +1,4 @@
+import { state } from "../App";
 import { Bird } from "./bird";
 import { Button } from "./button";
 import { Misc } from "./misc";
@@ -35,6 +36,8 @@ export class TitleScreen {
   scale: number;
   width: number;
 
+  buttons: Button[] = [];
+
   constructor(canvas: HTMLCanvasElement, IMAGE: HTMLImageElement, FPS: number) {
     this.IMAGE = IMAGE;
     this.FPS = FPS;
@@ -56,10 +59,39 @@ export class TitleScreen {
     this.creditY = (11 / TitleScreen.grid) * this.canvasHeight;
 
     this.maxY = this.y;
+    this.buttons = [
+      new Button(
+        canvas,
+        IMAGE,
+        "start",
+        this.canvasWidth * (2 / TitleScreen.grid),
+        this.canvasHeight * (9 / TitleScreen.grid),
+        (screens: Screens) => {
+          state.toScreen("game");
+          state.buttons = screens["game"].buttons;
+        }
+      ),
+
+      new Button(
+        canvas,
+        IMAGE,
+        "score",
+        this.canvasWidth * (10 / TitleScreen.grid),
+        this.canvasHeight * (9 / TitleScreen.grid),
+        () => {
+          console.log(state.highestScore);
+        },
+        true
+      ),
+    ];
   }
 
   centerX(width: number) {
     return (this.canvasWidth - width) / 2;
+  }
+
+  getAllButtons() {
+    return this.buttons;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -84,26 +116,8 @@ export class TitleScreen {
       this.y + Bird.spriteHeight
     );
 
-    // Start button
-    Button.draw(
-      "start",
-      ctx,
-      this.IMAGE,
-      this.canvasWidth * (2 / TitleScreen.grid),
-      this.canvasHeight * (9 / TitleScreen.grid),
-      this.scale
-    );
-
-    // Score button
-    Button.draw(
-      "score",
-      ctx,
-      this.IMAGE,
-      this.canvasWidth * (10 / TitleScreen.grid),
-      this.canvasHeight * (9 / TitleScreen.grid),
-      this.scale,
-      true
-    );
+    // Buttons
+    this.buttons.forEach((button) => button.draw(ctx));
 
     // Credits text
     ctx.drawImage(

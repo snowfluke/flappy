@@ -1,3 +1,4 @@
+import { state } from "../App";
 import { Bird } from "./bird";
 import { Button } from "./button";
 import { Misc } from "./misc";
@@ -6,32 +7,35 @@ import { Title } from "./title";
 
 export class GameScreen {
   static grid: number = 12;
+  static collisionMargin = 5;
 
   IMAGE: HTMLImageElement;
   FPS: number;
 
   bird: Bird;
   baseX: number;
+  birdSpriteX: number = 0;
 
   canvasWidth: number;
   canvasHeight: number;
-
-  birdSpriteX: number = 0;
   scale: number;
 
-  state: State;
   listener: void;
+  listentouchListener: void;
+
+  buttons: Button[];
+  inited: Boolean = false;
+  activeButton: Button;
+  prevPlaystate: playState[number] = "init";
 
   constructor(
     canvas: HTMLCanvasElement,
     IMAGE: HTMLImageElement,
     FPS: number,
-    STATE: State,
     baseX: number
   ) {
     this.IMAGE = IMAGE;
     this.FPS = FPS;
-    this.state = STATE;
 
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
@@ -41,8 +45,66 @@ export class GameScreen {
     this.baseX = baseX;
     this.scale = Misc.getScale(this.canvasWidth);
 
+    this.buttons = [
+      new Button(
+        canvas,
+        IMAGE,
+        "pause",
+        this.canvasWidth * (1 / GameScreen.grid),
+        this.canvasHeight * (0.5 / GameScreen.grid),
+        () => {
+          if (state.playState == "stop" || state.playState == "over") return;
+          state.setPlayState("pause");
+
+          this.activeButton = this.buttons[1];
+          state.buttons = [this.activeButton];
+        }
+      ),
+      new Button(
+        canvas,
+        IMAGE,
+        "play",
+        this.canvasWidth * (1 / GameScreen.grid),
+        this.canvasHeight * (0.5 / GameScreen.grid),
+        () => {
+          if (state.playState == "stop" || state.playState == "over") return;
+          if (this.prevPlaystate == "init") {
+            state.setPlayState("init");
+          } else {
+            state.setPlayState("play");
+          }
+
+          this.activeButton = this.buttons[0];
+          state.buttons = [this.activeButton];
+        }
+      ),
+    ];
+
+    this.activeButton = this.buttons[0];
+
     this.listener = window.addEventListener("keydown", (e) => {
-      if (e.code === "ArrowUp" && this.state.playState == "play") {
+      if (e.code === "Space" && state.currentScreen == "game") {
+        if (state.playState != "init" && state.playState != "play") return;
+        if (state.playState == "init") {
+          state.setPlayState("play");
+          this.inited = true;
+          this.prevPlaystate = "play";
+        }
+
+        this.bird.jump();
+      }
+    });
+
+    this.listentouchListener = window.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (e.type === "touchstart" && state.currentScreen == "game") {
+        if (state.playState != "init" && state.playState != "play") return;
+        if (state.playState == "init") {
+          state.setPlayState("play");
+          this.inited = true;
+          this.prevPlaystate = "play";
+        }
+
         this.bird.jump();
       }
     });
@@ -52,53 +114,56 @@ export class GameScreen {
     // Normal bird
     this.bird.draw(ctx);
 
-    // if (this.state.playState == "init") {
-    //   // Title get ready
-    //   Title.draw(
-    //     "ready",
-    //     ctx,
-    //     this.IMAGE,
-    //     0,
-    //     this.canvasHeight * (2.39 / GameScreen.grid),
-    //     this.canvasWidth
-    //   );
+    if (!this.inited) {
+      // Title get ready
+      Title.draw(
+        "ready",
+        ctx,
+        this.IMAGE,
+        0,
+        this.canvasHeight * (2.39 / GameScreen.grid),
+        this.canvasWidth
+      );
 
-    //   // Gesture hint
-    //   Misc.draw(
-    //     "tutorial",
-    //     ctx,
-    //     this.IMAGE,
-    //     this.canvasWidth / 2,
-    //     this.canvasHeight * (5 / GameScreen.grid),
-    //     this.canvasWidth
-    //   );
-    // }
+      // Gesture hint
+      Misc.draw(
+        "tutorial",
+        ctx,
+        this.IMAGE,
+        this.canvasWidth / 2,
+        this.canvasHeight * (5 / GameScreen.grid),
+        this.canvasWidth
+      );
+    }
 
-    // Pause button
-    Button.draw(
-      "pause",
-      ctx,
-      this.IMAGE,
-      this.canvasWidth * (1 / GameScreen.grid),
-      this.canvasHeight * (0.5 / GameScreen.grid),
-      this.scale
-    );
+    // Button
+    this.activeButton.draw(ctx);
 
     // Score
     Score.draw(
       ctx,
       this.IMAGE,
       this.canvasWidth / 2 -
-        this.state.score.length * Score.getStaticScoreWidth(this.state.score) -
-        (this.state.score.length - 1) * Score.spriteGap,
+        state.score.length * Score.getStaticScoreWidth(state.score) -
+        (state.score.length - 1) * Score.spriteGap,
       this.canvasHeight * (0.5 / GameScreen.grid),
       this.canvasWidth,
-      this.state.score
+      state.score
     );
   }
 
-  update(frame: number) {
-    if (this.state.playState === "init") return this.bird.update(frame, true);
+  getAllButtons() {
+    return [this.activeButton];
+  }
+
+  update(frame: number, state: State) {
+    if (state.playState === "init") return this.bird.update(frame, true);
     this.bird.update(frame);
+
+    state.setBirdPos({
+      x: this.bird.x + this.bird.width - GameScreen.collisionMargin,
+      y1: this.bird.y - GameScreen.collisionMargin,
+      y2: this.bird.y + this.bird.height - GameScreen.collisionMargin,
+    });
   }
 }

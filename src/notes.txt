@@ -4,7 +4,7 @@ gap = 5
 background: 0, 0, 144, 256
 base: 149, 0, 154, 56
 pipetop: 308, 0, 26 ,135
-pipebottom: 339, 0, 26, 121
+pipebottom: 340, 0, 26, 121
 scoreboard: 149, 61, 113, 58
 gesturetap: 149, 124, 39, 49
 copyright: 149, 178, 95, 7

@@ -1,3 +1,6 @@
+import { state } from "../App";
+import { Obstacle } from "./obstacle";
+
 export class Background {
   static spriteWidth = 144;
   static spriteHeight = 256;
@@ -31,6 +34,8 @@ export class Background {
   spriteBaseX: number = Background.spriteBaseX;
   spriteBaseY: number = Background.spriteBaseY;
 
+  obstacles: Obstacle[] = [];
+
   constructor(canvas: HTMLCanvasElement, IMAGE: HTMLImageElement, FPS: number) {
     this.IMAGE = IMAGE;
     this.width = canvas.width;
@@ -46,7 +51,8 @@ export class Background {
     return this.baseHeight / 2;
   }
 
-  update() {
+  update(frame: number) {
+    if (state.playState == "pause") return;
     if (this.baseX <= -this.width + this.GAME_SPEED) {
       this.baseX = this.width - this.GAME_SPEED;
       this.baseX2 += this.GAME_SPEED;
@@ -59,6 +65,18 @@ export class Background {
       this.baseX += this.GAME_SPEED;
     } else {
       this.baseX2 -= this.GAME_SPEED;
+    }
+
+    if (
+      frame % 100 == 0 &&
+      state.playState == "play" &&
+      state.currentScreen == "game"
+    ) {
+      if (this.obstacles.length > 5) this.obstacles.pop();
+
+      this.obstacles.unshift(
+        new Obstacle(this.width, this.height, this.IMAGE, this.baseHeight)
+      );
     }
   }
 
@@ -76,6 +94,13 @@ export class Background {
       this.height
     );
 
+    // Obstacles
+
+    if (state.playState !== "init" && state.currentScreen == "game") {
+      this.obstacles.forEach((obstacle: Obstacle) => {
+        obstacle.update(ctx, this.GAME_SPEED);
+      });
+    }
     // Base
     ctx.drawImage(
       this.IMAGE,
