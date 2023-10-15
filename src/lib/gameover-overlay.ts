@@ -13,7 +13,13 @@ export class GameOver {
   canvasWidth: number;
   canvasHeight: number;
 
-  constructor(canvas: HTMLCanvasElement, IMAGE: HTMLImageElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    IMAGE: HTMLImageElement,
+    start: () => void,
+    listener: (e: KeyboardEvent) => void,
+    touchListener: (e: TouchEvent) => void
+  ) {
     this.IMAGE = IMAGE;
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
@@ -26,8 +32,16 @@ export class GameOver {
         canvas.width * (2 / GameOver.grid),
         canvas.height * (9 / GameOver.grid),
         (screens: Screens) => {
-          console.log(screens, state);
-          window.location.reload();
+          window.removeEventListener("keydown", listener);
+          window.removeEventListener("touchstart", touchListener);
+
+          state.score = "0";
+          state.setPlayState("init");
+          state.toScreen("title");
+
+          console.log(state, screens);
+
+          start();
         }
       ),
 

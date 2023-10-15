@@ -12,77 +12,89 @@ function App() {
   IMAGE.src = "/spritesheet.png";
 
   let canvas: HTMLCanvasElement;
-  let frame = 0;
-
-  state.highestScore = localStorage.getItem("hs") || "0";
 
   onMount(() => {
-    if (window.innerWidth / window.innerHeight > ASPECT_RATIO) {
-      canvas.height = window.innerHeight;
-      canvas.width = Math.round(window.innerHeight * ASPECT_RATIO);
-    } else {
-      canvas.width = window.innerWidth;
-      canvas.height = Math.round(window.innerWidth / ASPECT_RATIO);
-    }
+    const start = () => {
+      if (window.innerWidth / window.innerHeight > ASPECT_RATIO) {
+        canvas.height = window.innerHeight;
+        canvas.width = Math.round(window.innerHeight * ASPECT_RATIO);
+      } else {
+        canvas.width = window.innerWidth;
+        canvas.height = Math.round(window.innerWidth / ASPECT_RATIO);
+      }
 
-    const ctx = canvas.getContext("2d")!;
-    const background = new Background(canvas, IMAGE, FPS);
-    const gameOver = new GameOver(canvas, IMAGE);
+      let frame = 0;
+      state.highestScore = localStorage.getItem("hs") || "0";
 
-    const titleScreen = new TitleScreen(canvas, IMAGE, FPS);
-    screens.title = {
-      render() {
-        titleScreen.update(frame);
-        titleScreen.draw(ctx);
-      },
-      buttons: titleScreen.getAllButtons(),
-    };
+      const ctx = canvas.getContext("2d")!;
+      const background = new Background(canvas, IMAGE, FPS);
 
-    // init state buttons
-    state.buttons = titleScreen.getAllButtons();
+      const titleScreen = new TitleScreen(canvas, IMAGE, FPS);
+      screens.title = {
+        render() {
+          titleScreen.update(frame);
+          titleScreen.draw(ctx);
+        },
+        buttons: titleScreen.getAllButtons(),
+      };
 
-    const gameScreen = new GameScreen(
-      canvas,
-      IMAGE,
-      FPS,
-      background.getBaseTop()
-    );
-    screens.game = {
-      render(state: State) {
-        gameScreen.update(frame, state);
-        gameScreen.draw(ctx);
-      },
-      buttons: gameScreen.getAllButtons(),
-    };
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // init state buttons
+      state.buttons = titleScreen.getAllButtons();
 
-      background.update(frame);
-      background.draw(ctx);
+      const gameScreen = new GameScreen(
+        canvas,
+        IMAGE,
+        FPS,
+        background.getBaseTop()
+      );
+      screens.game = {
+        render(state: State) {
+          gameScreen.update(frame, state);
+          gameScreen.draw(ctx);
+        },
+        buttons: gameScreen.getAllButtons(),
+      };
 
-      screens[state.currentScreen].render(state);
+      const gameOver = new GameOver(
+        canvas,
+        IMAGE,
+        start,
+        gameScreen.listener,
+        gameScreen.touchListener
+      );
 
-      frame++;
+      const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (state.playState == "stop") {
-        let prevHs = localStorage.getItem("hs") || "0";
-        if (parseInt(prevHs) < parseInt(state.score)) {
-          localStorage.setItem("hs", state.score);
-          state.highestScore = state.score;
+        background.update(frame);
+        background.draw(ctx);
+
+        screens[state.currentScreen].render(state);
+
+        frame++;
+
+        if (state.playState == "stop") {
+          let prevHs = localStorage.getItem("hs") || "0";
+          if (parseInt(prevHs) < parseInt(state.score)) {
+            localStorage.setItem("hs", state.score);
+            state.highestScore = state.score;
+          }
+
+          state.buttons = gameOver.getAllButtons();
+          gameOver.draw(ctx);
+          console.log("state", state);
+          return;
         }
 
-        state.buttons = gameOver.getAllButtons();
-        gameOver.draw(ctx);
-        console.log("state", state);
-        return;
-      }
-
-      if (state.playState == "score") {
-        gameOver.draw(ctx, true);
-      }
-      requestAnimationFrame(animate);
+        if (state.playState == "score") {
+          gameOver.draw(ctx, true);
+        }
+        requestAnimationFrame(animate);
+      };
+      animate();
     };
-    animate();
+
+    start();
 
     canvas.addEventListener("click", (e) => {
       if (!state.buttons.length) return;
@@ -102,7 +114,7 @@ function App() {
   return <canvas ref={canvas!} />;
 }
 
-export const state: State = {
+const defaultState: DefaultState = {
   score: "0",
   highestScore: "0",
   currentScreen: "title",
@@ -113,6 +125,10 @@ export const state: State = {
     y2: 0,
   },
   buttons: [],
+};
+
+export const state: State = {
+  ...defaultState,
   setBirdPos(birdPos: birdPos) {
     this.birdPos = birdPos;
   },

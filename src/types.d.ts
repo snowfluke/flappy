@@ -17,13 +17,15 @@ type Audios = {
   [key: string]: () => void;
 };
 
-type State = {
+type DefaultState = {
   score: string;
   highestScore: string;
   currentScreen: screenList[number];
   playState: playState[number];
   birdPos: birdPos;
   buttons: Button[];
+};
+type State = DefaultState & {
   setBirdPos: (birdPos: birdPos) => void;
   incScore: () => void;
   setPlayState: (state: playState[number]) => void;

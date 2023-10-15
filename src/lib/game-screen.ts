@@ -20,11 +20,11 @@ export class GameScreen {
   canvasHeight: number;
   scale: number;
 
-  listener: void;
-  listentouchListener: void;
+  listener: (e: KeyboardEvent) => void;
+  touchListener: (e: TouchEvent) => void;
 
   buttons: Button[];
-  inited: Boolean = false;
+  inited: Boolean;
   activeButton: Button;
   prevPlaystate: playState[number] = "init";
 
@@ -81,8 +81,9 @@ export class GameScreen {
     ];
 
     this.activeButton = this.buttons[0];
+    this.inited = false;
 
-    this.listener = window.addEventListener("keydown", (e) => {
+    this.listener = (e: KeyboardEvent) => {
       if (e.code === "Space" && state.currentScreen == "game") {
         if (state.playState != "init" && state.playState != "play") return;
         if (state.playState == "init") {
@@ -93,9 +94,9 @@ export class GameScreen {
 
         this.bird.jump();
       }
-    });
+    };
 
-    this.listentouchListener = window.addEventListener("touchstart", (e) => {
+    this.touchListener = (e) => {
       if (e.type === "touchstart" && state.currentScreen == "game") {
         if (state.playState != "init" && state.playState != "play") return;
         if (state.playState == "init") {
@@ -106,7 +107,10 @@ export class GameScreen {
 
         this.bird.jump();
       }
-    });
+    };
+
+    window.addEventListener("keydown", this.listener);
+    window.addEventListener("touchstart", this.touchListener);
   }
 
   draw(ctx: CanvasRenderingContext2D) {
