@@ -27,6 +27,7 @@ function App() {
       state.highestScore = localStorage.getItem("hs") || "0";
 
       const ctx = canvas.getContext("2d")!;
+      ctx.imageSmoothingEnabled = false;
       const background = new Background(canvas, IMAGE, FPS);
 
       const titleScreen = new TitleScreen(canvas, IMAGE, FPS);
