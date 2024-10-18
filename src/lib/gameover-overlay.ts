@@ -57,7 +57,7 @@ export class GameOver {
             encodeURIComponent(
               "I scored " +
                 state.score +
-                " in Flappy Bird! Beat that! https://flappy-zeta.vercel.app - Powered by @akasha_seeker #typescript #html5"
+                " in Flappy Bird! Beat that! https://flappy-zeta.vercel.app - Powered by @eeexev #typescript #html5"
             );
           const share = window.open(
             link,

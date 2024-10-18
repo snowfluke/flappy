@@ -1,4 +1,18 @@
-## Usage
+![Screenshot flappy bird 1](./public/screenshot1.png)
+![Screenshot flappy bird 2](./public/screenshot2.png)
+![Screenshot flappy bird 3](./public/screenshot3.png)
+
+## Prerequisites
+
+- Nodejs
+- `pnpm` or `npm` package manager
+
+## Installation
+
+```bash
+npm install # or pnpm install or yarn install
+
+```
 
 ```bash
 $ npm install # or pnpm install or yarn install
