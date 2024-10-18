@@ -8,6 +8,10 @@
 
 https://flappy-zeta.vercel.app/
 
+## Note
+
+Please lower your refresh rate, the flap is so fast on Gaming laptop, I haven't worked my way around it. Use your phone.
+
 ## Prerequisites
 
 - Nodejs
