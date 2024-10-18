@@ -1,6 +1,12 @@
-![Screenshot flappy bird 1](./public/screenshot1.png)
-![Screenshot flappy bird 2](./public/screenshot2.png)
-![Screenshot flappy bird 3](./public/screenshot3.png)
+<p float="left">
+<img src="./public/screenshot1.png" width="25%" alt="Screenshot flappy bird 1">
+<img src="./public/screenshot2.png" width="25%" alt="Screenshot flappy bird 2">
+<img src="./public/screenshot3.png" width="25%" alt="Screenshot flappy bird 3">
+</p>
+
+## Try online
+
+https://flappy-zeta.vercel.app/
 
 ## Prerequisites
 
@@ -12,10 +18,6 @@
 ```bash
 npm install # or pnpm install or yarn install
 
-```
-
-```bash
-$ npm install # or pnpm install or yarn install
 ```
 
 ### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
