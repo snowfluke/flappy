@@ -9,9 +9,9 @@ function App() {
   const FPS = 7;
   const IMAGE = new Image();
 
-  IMAGE.src = "/spritesheet.png";
+  IMAGE.src = `${import.meta.env.BASE_URL}spritesheet.png`;
 
-  let canvas: HTMLCanvasElement;
+  let canvas!: HTMLCanvasElement;
 
   onMount(() => {
     const start = () => {
@@ -148,23 +148,23 @@ export const screens: Screens = {};
 
 export const audio: Audios = {
   wing: () => {
-    const audio = new Audio("/audio/wing.ogg");
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/wing.ogg`);
     audio.play();
   },
   hit: () => {
-    const audio = new Audio("/audio/hit.ogg");
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/hit.ogg`);
     audio.play();
   },
   die: () => {
-    const audio = new Audio("/audio/die.ogg");
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/die.ogg`);
     audio.play();
   },
   point: () => {
-    const audio = new Audio("/audio/point.ogg");
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/point.ogg`);
     audio.play();
   },
   swoosh: () => {
-    const audio = new Audio("/audio/swoosh.ogg");
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/swoosh.ogg`);
     audio.play();
   },
 };

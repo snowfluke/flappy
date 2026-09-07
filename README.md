@@ -6,7 +6,7 @@
 
 ## Try online
 
-https://flappy-zeta.vercel.app/
+https://snowfluke.github.io/flappy/
 
 ## Note
 
